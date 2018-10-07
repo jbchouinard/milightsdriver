@@ -1,5 +1,6 @@
 import argparse
 import datetime
+import logging
 import time
 from collections import namedtuple
 
@@ -34,18 +35,23 @@ def minute_of_day(time: datetime.time):
 class Scheduler:
     Period = namedtuple('Period', ['start_time', 'end_time', 'mode1', 'mode2'])
 
-    def __init__(self, controller, schedule):
+    def __init__(self, controller, schedule, delay=10):
         self.controller = controller
         self.schedule = self.parse_schedule(schedule)
+        self.mode = None
+        self.delay = delay
 
     def run(self):
         while True:
             time_now = now()
             mode = self.get_mode_at(time_now)
-            print('mode at {} is {!r}'.format(time_now, mode))
-            if mode is not None:
+            if mode is not None and mode != self.mode:
+                logging.debug('Changing mode to {!r}'.format(mode))
                 self.controller.set_all(mode)
-            time.sleep(30)
+                self.mode = mode
+            else:
+                logging.debug('Mode unchanged')
+            time.sleep(self.delay)
 
     def period_progress(self, period, at_time):
         start = minute_of_day(period.start_time)
@@ -75,10 +81,15 @@ class Scheduler:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('bridgeurl')
+    parser.add_argument('url')
+    parser.add_argument('--log-level', default='INFO')
     args = parser.parse_args()
-    client = milight.Client(args.bridgeurl)
+    log_level = logging.getLevelName(args.log_level.upper())
+    logging.basicConfig(level=log_level, format='%(asctime)s | %(levelname)s | %(message)s')
+    logging.info('Trying to connect to milights-rest at {!r}'.format(args.url))
+    client = milight.Client(args.url)
     controller = milight.Controller(client)
+    logging.info('Starting')
     scheduler = Scheduler(controller, schedule)
     scheduler.run()
 
