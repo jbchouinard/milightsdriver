@@ -24,14 +24,14 @@ class Client:
         resp = requests.get(self.url(path_or_url))
         resp.raise_for_status()
         parsed = resp.json()
-        assert parsed['status'] == 'ok'
+        assert parsed['status'] == 200
         return parsed['data']
 
     def put(self, path_or_url, data):
         resp = requests.put(self.url(path_or_url), json=data)
         resp.raise_for_status()
         parsed = resp.json()
-        assert parsed['status'] == 'ok'
+        assert parsed['status'] == 200
         return parsed['data']
 
     def get_zone(self, name):
