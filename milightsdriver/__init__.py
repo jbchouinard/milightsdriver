@@ -1,3 +1,4 @@
+from . import cli
 from . import colors
 from . import effects
 from . import milight

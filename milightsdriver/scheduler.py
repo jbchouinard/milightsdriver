@@ -10,14 +10,14 @@ from milightsdriver.colors import *
 
 
 schedule = {
-    '0:00-1:00': RED._replace(brightness=0),
-    '1:00-7:00': Off(),
-    '7:00-9:00': [WARM_WHITE._replace(brightness=0), WARM_WHITE],
-    '9:00-11:00': [WARM_WHITE, COOL_WHITE],
-    '11:00-18:00': COOL_WHITE,
-    '18:00-20:00': [COOL_WHITE, WARM_WHITE],
-    '20:00-22:30': [C_WARM_WHITE, RED._replace(brightness=70)],
-    '22:30-23:59': [RED._replace(brightness=70), RED._replace(brightness=0)],
+    '0:00-6:45': Off(),
+    '6:45-7:30': [WARM_WHITE._replace(brightness=0), WARM_WHITE],
+    '7:30-10:00': [WARM_WHITE, WARM_WHITE.mix(COOL_WHITE)],
+    '10:00-19:00': WARM_WHITE.mix(COOL_WHITE),
+    '19:00-21:00': [WARM_WHITE.mix(COOL_WHITE), WARM_WHITE],
+    '21:00-22:00': [C_WARM_WHITE, RED._replace(brightness=70)],
+    '22:00-23:15': [RED._replace(brightness=70), RED._replace(brightness=0)],
+    '23:15-23:59': Off(),
 }
 
 
@@ -28,7 +28,7 @@ def now():
     return datetime.datetime.now().time()
 
 
-def minute_of_day(time: datetime.time):
+def minute_of_day(time: datetime.time) -> int:
     return time.hour * 60 + time.minute
 
 
@@ -44,13 +44,11 @@ class Scheduler:
     def run(self):
         while True:
             time_now = now()
-            mode = self.get_mode_at(time_now)
-            if mode is not None and mode != self.mode:
-                logging.debug('Changing mode to {!r}'.format(mode))
-                self.controller.set_all(mode)
-                self.mode = mode
-            else:
-                logging.debug('Mode unchanged')
+            self.mode = self.get_mode_at(time_now)
+            if self.mode is not None:
+                logging.debug('Setting mode to {!r}'.format(self.mode))
+                self.controller.set_all(self.mode)
+                self.controller.set_all(self.mode)
             time.sleep(self.delay)
 
     def period_progress(self, period, at_time):

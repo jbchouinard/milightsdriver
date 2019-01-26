@@ -8,6 +8,9 @@ setup(
     packages = find_packages(),
     install_requires = ['requests'],
     entry_points = {
-        'console_scripts': ['scheduler=milightsdriver.scheduler:main']
+        'console_scripts': [
+            'misched=milightsdriver.scheduler:main',
+            'mictl=milightsdriver.cli:main',
+        ]
     }
 )
