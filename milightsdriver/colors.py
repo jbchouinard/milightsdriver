@@ -1,6 +1,6 @@
 import re
 
-from .milight import Color, White
+from .milight import Color, White, Off
 
 RED = Color(0, 100, 0)
 GREEN = Color(85, 100, 0)
@@ -25,6 +25,7 @@ COOL_WHITE = White(100, 100)
 C_COOL_WHITE = Color(145, 100, 100)
 
 COLORS = {
+    "off": Off(),
     "red": RED,
     "green": GREEN,
     "blue": BLUE,

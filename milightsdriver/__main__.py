@@ -58,9 +58,10 @@ def set(ctx, zone, mode):
 
 
 @cli.command()
+@click.option("--pausefile", "-p", default=None)
 @click.pass_context
-def scheduler(ctx):
-    scheduler = Scheduler(ctx.obj, schedule)
+def scheduler(ctx, pausefile):
+    scheduler = Scheduler(ctx.obj, schedule, pausefile=pausefile)
     scheduler.run()
 
 

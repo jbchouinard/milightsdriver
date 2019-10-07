@@ -113,15 +113,16 @@ def minute_of_day(time: datetime.time) -> int:
 class Scheduler:
     Period = namedtuple("Period", ["start_time", "end_time", "zones"])
 
-    def __init__(self, controller, schedule, delay=3):
+    def __init__(self, controller, schedule, delay=3, pausefile=None):
         self.controller = controller
         self.schedule = {k: self.parse_schedule(s) for k, s in schedule.items()}
         self.modes = {}
         self.delay = delay
+        self.pausefile = pausefile
 
     def run(self):
         while True:
-            if not os.path.exists("/usr/home/jerome/deploy/milights-driver/paused"):
+            if self.pausefile is None or not os.path.exists(self.pausefile):
                 self.set_lights(datetime.datetime.now())
             time.sleep(self.delay)
 
