@@ -2,15 +2,10 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name = 'milightsdriver',
-    version = '1.0.0',
-    author = 'jbch',
-    packages = find_packages(),
-    install_requires = ['requests'],
-    entry_points = {
-        'console_scripts': [
-            'misched=milightsdriver.scheduler:main',
-            'mictl=milightsdriver.cli:main',
-        ]
-    }
+    name="milightsdriver",
+    version="1.0.0",
+    author="jbch",
+    packages=find_packages(),
+    install_requires=["requests"],
+    entry_points={"console_scripts": ["mictl=milightsdriver.__main__:cli"]},
 )

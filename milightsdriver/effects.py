@@ -1,15 +1,15 @@
-from typing import Generator
+from typing import Iterator
 
-from milightsdriver.milight import Color, Mode, White
-
-
-Effect = Generator[Mode, None, None]
+from .milight import Color, Mode, White
 
 
-def steps(start: int, end: int, count: int) -> Effect:
+Effect = Iterator[Mode]
+
+
+def steps(start: int, end: int, count: int) -> Iterator[int]:
     assert count >= 2
     inc = (end - start) / (count - 1)
-    acc = start
+    acc: float = start
     for _ in range(count):
         yield min(end, int(acc))
         acc += inc
@@ -26,10 +26,9 @@ def color_gradient(start_color: Color, end_color: Color, count: int) -> Effect:
 def white_gradient(start_color: White, end_color: White, count: int) -> Effect:
     temps = steps(start_color.temperature, end_color.temperature, count)
     brs = steps(start_color.brightness, end_color.brightness, count)
-    for temp, br, in zip(temps, brs):
+    for temp, br in zip(temps, brs):
         yield White(temp, br)
 
 
 def sunrise(n: int = 100) -> Effect:
     return white_gradient(White(0, 0), White(100, 100), n)
-
